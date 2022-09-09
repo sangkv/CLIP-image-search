@@ -22,11 +22,11 @@ class extract_features():
 
     def extract_text_features(self, text):
         # Prepare the text
-        text_inputs = clip.tokenize(text).to(self.DEVICE)
+        text_input = clip.tokenize(text).to(self.DEVICE)
 
         # Calculate features of the image
         with torch.no_grad():
-            text_features = self.model.encode_text(text_inputs)
+            text_features = self.model.encode_text(text_input)
         
         # Normalize
         text_features /= text_features.norm(dim=-1, keepdim=True)
