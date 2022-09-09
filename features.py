@@ -18,11 +18,11 @@ class extract_features():
         # Normalize
         image_features /= image_features.norm(dim=-1, keepdim=True)
 
-        return image_features
+        return image_features[0].cpu().numpy()
 
-    def extract_text_features(self, list_text):
+    def extract_text_features(self, text):
         # Prepare the text
-        text_inputs = clip.tokenize(list_text).to(self.DEVICE)
+        text_inputs = clip.tokenize(text).to(self.DEVICE)
 
         # Calculate features of the image
         with torch.no_grad():
@@ -31,4 +31,4 @@ class extract_features():
         # Normalize
         text_features /= text_features.norm(dim=-1, keepdim=True)
 
-        return text_features
+        return text_features[0].cpu().numpy()
