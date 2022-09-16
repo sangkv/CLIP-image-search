@@ -42,12 +42,13 @@ class query():
 
         return sorted_results[:n_result]
 
-# Check search results
-query = query()
 
-input_data = 'a herd of elephants'
+if __name__ == '__main__':
+    # TEST
+    Q = query()
+    input_data = 'flowers'
 
-results = query.search(input_data=input_data)
+    results = Q.search(input_data=input_data)
 
-for elem in results:
-    print('\nimage name: ', elem['path_image'])
+    for elem in results:
+        print('\nimage name: ', elem['path_image'])
