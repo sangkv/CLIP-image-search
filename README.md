@@ -1,5 +1,5 @@
 # image-search
-Content-based image retrieval
+Query By Image Content
 
 ## Install:
 
