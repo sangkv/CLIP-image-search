@@ -73,6 +73,11 @@ class GUI():
         # 2. Group Results
         self.labelframe_results = LabelFrame(self.root, bd=0, text='', font=self.font, height=550, width=1240)
         self.labelframe_results.grid(row=1,column=0, padx=20)
+
+        # 3. Result
+        self.list_position = [(0, 0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,1), (1,2), (1, 3), (1, 4)]
+
+        self.list_label = []
         
 
         # Show GUI
@@ -88,42 +93,52 @@ class GUI():
         if w >= h:
             if w > self.showW:
                 imgH = int(h/(w/self.showW))
-                print(self.showW, imgH)
                 return img.resize((self.showW, imgH))
             return img
         else:
             if h > self.showH:
                 imgW = int(w/(h/self.showH))
-                print(imgW, self.showH)
                 return img.resize((imgW, self.showH))
             return img
     
-    def showImg(self, image_path, position):
-        # Image
-        img = Image.open(image_path)
-        imgtk = ImageTk.PhotoImage(self.resizeShow(img))
-        label = Label(self.labelframe_results, image=imgtk)
-        label.image = imgtk
-        # Position
-        row = position[0]
-        col = position[1]
-        # Show Image
-        label.grid(row=row, column=col, padx=5, pady=10, sticky='')
-
+    def showImg(self, image_path, idx):
+        if len(self.list_label) < len(self.list_position):
+            # Image
+            img = Image.open(image_path)
+            imgtk = ImageTk.PhotoImage(self.resizeShow(img))
+            label = Label(self.labelframe_results, image=imgtk)
+            label.image = imgtk
+            # Position
+            row = self.list_position[idx][0]
+            col = self.list_position[idx][1]
+            # Show Image
+            label.grid(row=row, column=col, padx=5, pady=10, sticky='')
+            # Add list
+            self.list_label.append(label)
+        else:
+            self.list_label[idx].image = None # Fix bug
+            img = Image.open(image_path)
+            imgtk = ImageTk.PhotoImage(self.resizeShow(img))
+            self.list_label[idx] = Label(self.labelframe_results, image=imgtk)
+            self.list_label[idx].image = imgtk
+            row = self.list_position[idx][0]
+            col = self.list_position[idx][1]
+            self.list_label[idx].grid(row=row, column=col, padx=5, pady=10, sticky='')
+            
 
     def search(self):
-        list_position = [(0, 0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,1), (1,2), (1, 3), (1, 4)]
         '''
         image_path = 'Corel-1000/0.jpg'
         for i in list_position:
             self.showImg(image_path, i)
         '''
         input_data = self.entry.get()
-        results = self.Q.search(input_data=input_data)
+        if input_data != '':
+            results = self.Q.search(input_data=input_data)
 
-        for i, elem in enumerate(results):
-            self.showImg(elem['path_image'], list_position[i])
-    
+            for idx, elem in enumerate(results):
+                self.showImg(elem['path_image'], idx)
+
 
 if __name__=='__main__':
     GUI()
