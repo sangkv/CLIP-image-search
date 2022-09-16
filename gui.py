@@ -13,6 +13,7 @@ from search import query
 
 class GUI():
     def __init__(self):
+        self.Q = query()
         # Init GUI
         self.root = tkinter.Tk()
         self.root.title('IMAGE SEARCH')
@@ -117,9 +118,8 @@ class GUI():
         for i in list_position:
             self.showImg(image_path, i)
         '''
-        Q = query()
         input_data = self.entry.get()
-        results = Q.search(input_data=input_data)
+        results = self.Q.search(input_data=input_data)
 
         for i, elem in enumerate(results):
             self.showImg(elem['path_image'], list_position[i])
