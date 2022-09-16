@@ -4,7 +4,12 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import *
+from PIL import Image
 from PIL import ImageTk
+
+from features import extract_features
+from index import index
+from search import query
 
 class GUI():
     def __init__(self):
@@ -16,6 +21,8 @@ class GUI():
         # Window size
         self.guiW = 1280
         self.guiH = 720
+        self.showW = int(self.guiW/5.5)
+        self.showH = int(self.guiH/3)
         self.root.geometry(str(self.guiW)+'x'+str(self.guiH))
         self.root.resizable(height=False, width=False)
 
@@ -74,9 +81,26 @@ class GUI():
     def donothing(self):
         messagebox.showinfo('Contact:', 'sangkv.work@gmail.com')
     
+    def resizeShow(self, img):
+        w, h = img.size
+
+        if w >= h:
+            if w > self.showW:
+                imgH = int(h/(w/self.showW))
+                print(self.showW, imgH)
+                return img.resize((self.showW, imgH))
+            return img
+        else:
+            if h > self.showH:
+                imgW = int(w/(h/self.showH))
+                print(imgW, self.showH)
+                return img.resize((imgW, self.showH))
+            return img
+    
     def showImg(self, image_path, position):
         # Image
-        imgtk = ImageTk.PhotoImage(file=image_path)
+        img = Image.open(image_path)
+        imgtk = ImageTk.PhotoImage(self.resizeShow(img))
         label = Label(self.labelframe_results, image=imgtk)
         label.image = imgtk
         # Position
@@ -88,9 +112,17 @@ class GUI():
 
     def search(self):
         list_position = [(0, 0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,1), (1,2), (1, 3), (1, 4)]
+        '''
         image_path = 'Corel-1000/0.jpg'
         for i in list_position:
             self.showImg(image_path, i)
+        '''
+        Q = query()
+        input_data = self.entry.get()
+        results = Q.search(input_data=input_data)
+
+        for i, elem in enumerate(results):
+            self.showImg(elem['path_image'], list_position[i])
     
 
 if __name__=='__main__':
