@@ -4,8 +4,6 @@ from tkinter.ttk import Combobox
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import *
-
-from PIL import Image
 from PIL import ImageTk
 
 class GUI():
@@ -61,7 +59,7 @@ class GUI():
         self.entry.grid(row=0, column=0, padx=100, pady=50)
 
         # Button
-        self.btnSearch = Button(self.labelframe_search, font=self.font, text='Search', relief=RAISED, bg='red', command=None)
+        self.btnSearch = Button(self.labelframe_search, font=self.font, text='Search', relief=RAISED, bg='red', command=self.search)
         self.btnSearch.grid(row=0, column=1, padx=30, pady=50)
 
         # 2. Group Results
@@ -75,6 +73,24 @@ class GUI():
     
     def donothing(self):
         messagebox.showinfo('Contact:', 'sangkv.work@gmail.com')
+    
+    def showImg(self, image_path, position):
+        # Image
+        imgtk = ImageTk.PhotoImage(file=image_path)
+        label = Label(self.labelframe_results, image=imgtk)
+        label.image = imgtk
+        # Position
+        row = position[0]
+        col = position[1]
+        # Show Image
+        label.grid(row=row, column=col, padx=5, pady=10, sticky='')
+
+
+    def search(self):
+        list_position = [(0, 0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,1), (1,2), (1, 3), (1, 4)]
+        image_path = 'Corel-1000/0.jpg'
+        for i in list_position:
+            self.showImg(image_path, i)
     
 
 if __name__=='__main__':
