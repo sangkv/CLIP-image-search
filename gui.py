@@ -1,18 +1,17 @@
 import tkinter
-from tkinter import ttk
-from tkinter.ttk import Combobox
-from tkinter import messagebox
-from tkinter import filedialog
 from tkinter import *
+from tkinter import messagebox
 from PIL import Image
 from PIL import ImageTk
 
 from search import search
 
+
 class GUI():
-    def __init__(self):
+    def __init__(self, path_database):
         # Initialize the search engine
-        self.machine = search('./database/Corel-1000')
+        self.machine = search(path_database)
+
         # Init GUI
         self.root = tkinter.Tk()
         self.root.title('IMAGE SEARCH')
@@ -30,27 +29,27 @@ class GUI():
         self.menubar = Menu(self.root)
 
         self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="New", command = self.donothing)
-        self.filemenu.add_command(label = "Open", command = self.donothing)
-        self.filemenu.add_command(label = "Save", command = self.donothing)
-        self.filemenu.add_command(label = "Save as...", command = self.donothing)
-        self.filemenu.add_command(label = "Close", command = self.donothing)
+        self.filemenu.add_command(label="New", command = self.contact)
+        self.filemenu.add_command(label = "Open", command = self.contact)
+        self.filemenu.add_command(label = "Save", command = self.contact)
+        self.filemenu.add_command(label = "Save as...", command = self.contact)
+        self.filemenu.add_command(label = "Close", command = self.contact)
         self.filemenu.add_separator()
         self.filemenu.add_command(label = "Exit", command = self.root.quit)
         self.menubar.add_cascade(label = "File", menu = self.filemenu)
 
         self.editmenu = Menu(self.menubar, tearoff=0)
-        self.editmenu.add_command(label = "Undo", command = self.donothing)
+        self.editmenu.add_command(label = "Undo", command = self.contact)
         self.editmenu.add_separator()
-        self.editmenu.add_command(label = "Cut", command = self.donothing)
-        self.editmenu.add_command(label = "Copy", command = self.donothing)
-        self.editmenu.add_command(label = "Paste", command = self.donothing)
-        self.editmenu.add_command(label = "Delete", command = self.donothing)
+        self.editmenu.add_command(label = "Cut", command = self.contact)
+        self.editmenu.add_command(label = "Copy", command = self.contact)
+        self.editmenu.add_command(label = "Paste", command = self.contact)
+        self.editmenu.add_command(label = "Delete", command = self.contact)
         self.menubar.add_cascade(label = "Edit", menu = self.editmenu)
 
         self.helpmenu = Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(label = "Help Index", command = self.donothing)
-        self.helpmenu.add_command(label = "About...", command = self.donothing)
+        self.helpmenu.add_command(label = "Help Index", command = self.contact)
+        self.helpmenu.add_command(label = "About...", command = self.contact)
         self.menubar.add_cascade(label = "Help", menu = self.helpmenu)
         self.root.config(menu = self.menubar)
 
@@ -73,17 +72,17 @@ class GUI():
         self.labelframe_results = LabelFrame(self.root, bd=0, text='', font=self.font, height=550, width=1240)
         self.labelframe_results.grid(row=1,column=0, padx=20)
 
-        # 3. Result
-        self.list_position = [(0, 0), (0,1), (0,2), (0,3), (0,4), (1,0), (1,1), (1,2), (1, 3), (1, 4)]
+        self.list_position = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                              (1, 0), (1, 1), (1, 2), (1, 3), (1, 4)]
 
-        self.list_label = []
+        self.number_results = len(self.list_position)
+
+        self.list_label = [Label(self.labelframe_results) for i in range(self.number_results)]
         
-
         # Show GUI
         self.root.mainloop()
 
-    
-    def donothing(self):
+    def contact(self):
         messagebox.showinfo('Contact:', 'sangkv.work@gmail.com')
     
     def resizeShow(self, img):
@@ -101,43 +100,32 @@ class GUI():
             return img
     
     def showImg(self, image_path, idx):
-        if len(self.list_label) < len(self.list_position):
-            # Image
-            img = Image.open(image_path)
-            imgtk = ImageTk.PhotoImage(self.resizeShow(img))
-            label = Label(self.labelframe_results, image=imgtk)
-            label.image = imgtk
-            # Position
-            row = self.list_position[idx][0]
-            col = self.list_position[idx][1]
-            # Show Image
-            label.grid(row=row, column=col, padx=5, pady=10, sticky='')
-            # Add list
-            self.list_label.append(label)
-        else:
-            self.list_label[idx].image = None # Fix bug
-            img = Image.open(image_path)
-            imgtk = ImageTk.PhotoImage(self.resizeShow(img))
-            self.list_label[idx] = Label(self.labelframe_results, image=imgtk)
-            self.list_label[idx].image = imgtk
-            row = self.list_position[idx][0]
-            col = self.list_position[idx][1]
-            self.list_label[idx].grid(row=row, column=col, padx=5, pady=10, sticky='')
+        # Image
+        img = Image.open(image_path)
+        imgtk = ImageTk.PhotoImage(self.resizeShow(img))
+        self.list_label[idx] = Label(self.labelframe_results, image=imgtk)
+        self.list_label[idx].image = imgtk
+        # Position
+        row = self.list_position[idx][0]
+        col = self.list_position[idx][1]
+        # Show Image
+        self.list_label[idx].grid(row=row, column=col, padx=5, pady=10, sticky='')
             
-
     def search(self):
-        '''
-        image_path = 'Corel-1000/0.jpg'
-        for i in list_position:
-            self.showImg(image_path, i)
-        '''
+        # Delete the old image displayed on the GUI
+        for label in self.list_label:
+            label.image = None
+        
+        # Get input text
         input_data = self.entry.get()
+
+        # Search
         if input_data != '':
-            results = self.machine.search(input_data=input_data)
+            results = self.machine.search(input_data=input_data, n_result=self.number_results)
 
             for idx, elem in enumerate(results):
                 self.showImg(elem['path_image'], idx)
 
 
 if __name__=='__main__':
-    GUI()
+    GUI('./database/Corel-1000')
