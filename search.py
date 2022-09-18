@@ -1,15 +1,16 @@
 import os
 import numpy as np
-from scipy.spatial import distance
 from PIL import Image
+from scipy.spatial import distance
 
+from database import database
 from features import extract_features
-from index import index
 
-class query():
-    def __init__(self):
+class search():
+    def __init__(self, path_database):
+        self.database = database().loadDatabase(path_database)
         self.model = extract_features()
-        self.database = index().loadDatabase()
+        print('model loaded!\n')
     
     def extract(self, input_data):
         try:
@@ -28,14 +29,14 @@ class query():
 
         list_results = []
 
-        for elem in self.database:
-            elem_result = dict()
-            elem_result['path_image'] = elem['path_image']
+        for metadata in self.database:
+            elem = dict()
+            elem['path_image'] = metadata['path_image']
 
             # Calculate similarity
-            elem_result['distance'] = distance.cosine(input_features, elem['image_embedding'])
+            elem['distance'] = distance.cosine(input_features, metadata['image_embedding'])
 
-            list_results.append(elem_result)
+            list_results.append(elem)
         
         #list_results.sort(key=lambda x:x['distance'])
         sorted_results = sorted(list_results, key=lambda x:x['distance'])
@@ -45,10 +46,34 @@ class query():
 
 if __name__ == '__main__':
     # TEST
-    Q = query()
+    machine = search('./database/Corel-1000')
+
+    # TEST 1: Seach by text
     input_data = 'flowers'
 
-    results = Q.search(input_data=input_data)
+    results = machine.search(input_data=input_data)
 
     for elem in results:
-        print('\nimage name: ', elem['path_image'])
+        print('image name: ', elem['path_image'])
+    
+    # TEST 2: Search by image
+    input_data = Image.open('./doc/a.jpg')
+
+    results = machine.search(input_data=input_data)
+
+    print('\n\n')
+    for elem in results:
+        print('image name: ', elem['path_image'])
+
+    # TEST 3: Similarity test
+    king = machine.extract('king')
+    man = machine.extract('man')
+    woman = machine.extract('woman')
+
+    queen = machine.extract('queen')
+
+    result = king - man + woman
+    similarity =  1 - distance.cosine(queen, result) # Cosine similarity
+
+    print('\n\nCosine similarity = ', similarity)
+

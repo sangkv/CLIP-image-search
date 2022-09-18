@@ -7,13 +7,12 @@ from tkinter import *
 from PIL import Image
 from PIL import ImageTk
 
-from features import extract_features
-from index import index
-from search import query
+from search import search
 
 class GUI():
     def __init__(self):
-        self.Q = query()
+        # Initialize the search engine
+        self.machine = search('./database/Corel-1000')
         # Init GUI
         self.root = tkinter.Tk()
         self.root.title('IMAGE SEARCH')
@@ -134,7 +133,7 @@ class GUI():
         '''
         input_data = self.entry.get()
         if input_data != '':
-            results = self.Q.search(input_data=input_data)
+            results = self.machine.search(input_data=input_data)
 
             for idx, elem in enumerate(results):
                 self.showImg(elem['path_image'], idx)
