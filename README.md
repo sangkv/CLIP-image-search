@@ -1,6 +1,5 @@
 # image-search
-Query By Image Content
-
+Search images by natural language
 ## Install:
 
 pip install -r requirements.txt
